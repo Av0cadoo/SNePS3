@@ -1,0 +1,41 @@
+		   Proposed New Syntax for SNePS 3
+
+This document contains a proposed new syntax for SNePS 3.  The basic
+idea is to use a version of KIF, or quoted lists using Cambridge
+Prefix notation.  An example of a SNePS 3 executable form asserting
+that Fido is a dog would be (assert '(Isa Fido dog)).  Perhaps build
+would be retained, in which case assert would also have a method for
+nodes, so (assert (build '(Isa Fido dog))) would also be legal.
+
+Each function symbol would be associated with a frame, as in SNePSLOG.
+There would be default frames, as in SNePSLOG mode 1, and the user
+could define frames, as in SNePSLOG mode 3.  The underlying data
+structure would be as in the past.
+
+The following syntax is for the quoted lists that express SNePS 3
+expressions.  In this grammar: "|" specifies alternatives; "*" means a
+sequence of 0 or more of the previous constituent; "+" means a
+sequence of 1 or more of the previous constituent; "{ ... }?"  means 0
+or 1 occurrence of the material enclosed in brackets; other
+occurrences of "?" are object-language symbols.  Some restrictions
+apply, but are not shown.
+
+<symbol> ::= <Lisp symbol> | <Lisp string>
+<integer> ::= <Lisp integer>
+<number> ::= <Lisp number>
+<individual term> ::= <symbol> | <number>
+<function symbol> ::= <symbol>
+<term> ::=
+         <individual term>
+       | <function symbol>
+       | (any <symbol> <term>*)
+       | (some {(<integer> <integer> <integer>)}? <symbol> (<symbol>*) <term>*)
+       | (atmost <integer> <symbol> (<symbol>*) <term>*)
+       | (? <symbol> <term>*)
+       | (setof <term>+)
+       | (<term> <term>*) ; functional term
+       | ({not | ~} <term>)
+       | ({and | or | nor | nand | xor | iff | <=>} <term>+)
+       | ({implies | => | &=> | v=> | <integer>=>} <term> <term>)
+       | (andor (<integer> <integer>) <term>+)
+       | (thresh (<integer> {<integer>}?) <term>+)

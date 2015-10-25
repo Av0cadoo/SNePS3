@@ -1,0 +1,3 @@
+#! /bin/bash
+
+composer -L C:\\Program Files\\Sneps3

@@ -1,0 +1,56 @@
+;;; Demonstration of SNePS 3 Path-Based Inference
+;;; Stuart C. Shapiro
+;;; January 30, 2012
+
+(in-package :snuser)
+(clearkb t)
+
+(defineSlot subclass :type Category :negadjust reduce
+	    :path (or subclass
+		      (compose ! subclass (kstar (compose superclass- ! subclass)))
+		      (compose (restrict (compose nor- !) ?)
+			       subclass (kstar (compose subclass- ! superclass))))
+	    :docstring "Subcategories of some category/ies.")
+(defineSlot superclass :type Category :negadjust reduce
+	    :path (or superclass
+		      (compose ! superclass (kstar (compose subclass- ! superclass)))
+		      (compose (restrict (compose nor- !) ?)
+			       superclass (kstar (compose superclass- ! subclass))))
+	    :docstring "Supercategories of some category/ies.")
+
+(definePath 'class '(or class
+		     (compose ! class (kstar (compose subclass- ! superclass)))
+		     (compose (restrict (compose nor- !) ?)
+		      class 
+		      (kstar (compose superclass- ! subclass)))))
+
+(definePath 'member '(compose member (kstar (compose equiv- ! equiv)))) 
+
+(defineCaseframe 'Proposition '('Ako subclass superclass)
+  :docstring "every [subclass] is a [superclass]")
+
+(showproofs :goals t)
+(assert '(Isa Fido Dog))
+
+(assert '(Ako Dog Mammal))
+(assert '(Ako Salmon Fish))
+(assert '(Ako (setof Mammal Fish) Vertebrate))
+(assert '(Ako Vertebrate Animal))
+(assert '(Ako Fish SeaCreature))
+(assert '(not (Ako Mammal Fish)))
+(ask '(Ako Mammal Animal))
+(ask '(Ako Mammal SeaCreature))
+(ask '(Ako Mammal Salmon))
+(ask '(Isa Fido Animal))
+(ask '(Isa Fido SeaCreature))
+(assert '(Equiv Fido mydog))
+(ask '(Isa mydog Animal))
+(assert '(Equiv mydog wifesdog))
+(ask '(Equiv Fido wifesdog))
+
+;;; Demonstration of path constructs using pathsfrom
+(pathsfrom 'Fido '(compose member- class))
+(pathsfrom 'Fido '(compose member- ! class))
+
+(pathsfrom 'Fido '(compose equiv- equiv))
+(pathsfrom 'Fido '(irreflexive-restrict (compose equiv- equiv)))
